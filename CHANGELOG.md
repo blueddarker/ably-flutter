@@ -1,5 +1,65 @@
 # Changelog
 
+## [1.2.20](https://github.com/ably/ably-flutter/tree/v1.2.20)
+
+[Full Changelog](https://github.com/ably/ably-flutter/compare/v1.2.19...v1.2.20)
+
+**Closed issues:**
+
+- \[Android\] Encrypted channels periodically throws `java.util.ConcurrentModificationException` [\#483](https://github.com/ably/ably-flutter/issues/483)
+- Replace Cocoa client options calls to `addAgent:version` with `agents` property set [\#448](https://github.com/ably/ably-flutter/issues/448)
+
+## [1.2.19](https://github.com/ably/ably-flutter/tree/v1.2.19)
+
+[Full Changelog](https://github.com/ably/ably-flutter/compare/v1.2.18...v1.2.19)
+
+**Closed issues:**
+
+- Ably causes runner to crash in XCode 15 [\#480](https://github.com/ably/ably-flutter/issues/480)
+- Does it work for flutter web [\#476](https://github.com/ably/ably-flutter/issues/476)
+- Update android decoder for updated clientOptions [\#472](https://github.com/ably/ably-flutter/issues/472)
+
+## [1.2.18](https://github.com/ably/ably-flutter/tree/v1.2.18)
+
+[Full Changelog](https://github.com/ably/ably-flutter/compare/1.2.17...v1.2.18)
+
+**Fixed bugs:**
+
+- Fix java/android custom fallbacks [\#470](https://github.com/ably/ably-flutter/pull/470)
+
+## [1.2.17](https://github.com/ably/ably-flutter/tree/v1.2.17)
+
+[Full Changelog](https://github.com/ably/ably-flutter/compare/v1.2.16...v1.2.17)
+
+**Fixed bugs:**
+
+- Realtime connection with authUrl causes crash on iOS [\#465](https://github.com/ably/ably-flutter/issues/465)
+
+## [1.2.16](https://github.com/ably/ably-flutter/tree/v1.2.16)
+
+[Full Changelog](https://github.com/ably/ably-flutter/compare/v1.2.15...v1.2.16)
+
+**Implemented enhancements:**
+
+- Added new Auth methods: 'requestToken', 'authorize','createTokenRequest' [\#460](https://github.com/ably/ably-flutter/pull/460)
+
+**Fixed bugs:**
+
+- authHeaders type conversion on Android Plugin is incorrect [\#444](https://github.com/ably/ably-flutter/issues/444)
+- iOS \_CastError exception [\#355](https://github.com/ably/ably-flutter/issues/355)
+
+**Closed issues:**
+
+- How to handle when user auth changes? [\#459](https://github
+.com/ably/ably-flutter/issues/459)
+- Expose `href` from `ErrorInfo` in bubbled exceptions [\#441](https://github.com/ably/ably-flutter/issues/441)
+- java.util.HashMap cannot be cast to io.ably.lib.types.Param [\#439](https://github.com/ably/ably-flutter/issues/439)
+
+**Merged pull requests:**
+
+- Add numbers strategy for Gson to prevent changing int to double [\#462](https://github.com/ably/ably-flutter/pull/462) ([Afur](https://github.com/Afur))
+- Expose error info in AblyException toString [\#447](https://github.com/ably/ably-flutter/pull/447) ([davyskiba](https://github.com/davyskiba))
+
 ## [1.2.15](https://github.com/ably/ably-flutter/tree/v1.2.15)
 
 [Full Changelog](https://github.com/ably/ably-flutter/compare/v1.2.14...v1.2.15)
