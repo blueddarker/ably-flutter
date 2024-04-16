@@ -3,10 +3,9 @@ import 'dart:async';
 import 'package:ably_flutter/ably_flutter.dart';
 import 'package:ably_flutter/src/platform/platform_internal.dart';
 
-/// connects to Ably service using a [web-socket](https://www.ably.com/topic/websockets) connection
-///
-/// https://docs.ably.com/client-lib-development-guide/features/#RTN1
+/// Enables the management of a connection to Ably.
 class Connection extends PlatformObject {
+  /// @nodoc
   /// Realtime client instance
   final Realtime realtime;
 
@@ -14,78 +13,110 @@ class Connection extends PlatformObject {
 
   ErrorInfo? _errorReason;
 
-  /// instantiates a connection with [realtime] client instance
+  String? _id;
+
+  String? _key;
+
+  /// @nodoc
+  /// Instantiates a connection with [realtime] client instance.
   ///
-  /// sets default [state] to [ConnectionState.initialized] and starts listening
+  /// Sets default [state] to [ConnectionState.initialized] and starts listening
   /// for updates to the connection [state].
   Connection(this.realtime)
       : _state = ConnectionState.initialized,
         super() {
-    on().listen((event) {
-      _state = event.current;
-      _errorReason = event.reason;
+    _onConnectionStateChange().listen((event) {
+      _state = event.stateChange.current;
+      _errorReason = event.stateChange.reason;
+      _id = event.connectionId;
+      _key = event.connectionKey;
     });
   }
 
+  /// @nodoc
   @override
   Future<int> createPlatformInstance() async => realtime.handle;
 
-  /// Error information associated with connection failure
-  ///
-  /// See:
-  /// https://docs.ably.com/client-lib-development-guide/features/#RTN14
-  /// https://docs.ably.com/client-lib-development-guide/features/#RTN15
+  /// An [ErrorInfo] object describing the last error received if a connection
+  /// failure occurs.
   ErrorInfo? get errorReason => _errorReason;
 
-  /// A public identifier for this connection, used to identify
-  /// this member in presence events and message ids.
-  ///
-  /// https://docs.ably.com/client-lib-development-guide/features/#RTN8
-  String? id;
+  /// A unique public identifier for this connection, used to identify this
+  /// member.
+  String? get id => _id;
 
-  /// A unique private connection key provided by Ably that is used to reconnect
-  /// and retain connection state following an unexpected disconnection
+  /// A unique private connection key used to recover or resume a connection,
+  /// assigned by Ably.
   ///
-  /// https://docs.ably.com/client-lib-development-guide/features/#RTN9
-  String? key;
+  /// When recovering a connection explicitly, the `recoveryKey` is used in the
+  /// recover client options as it contains both the key and the last message
+  /// serial. This private connection key can also be used by other REST clients
+  /// to publish on behalf of this client. See the
+  /// [publishing over REST on behalf of a realtime client docs](https://ably.com/docs/rest/channels#publish-on-behalf)
+  /// for more info.
+  String? get key => _key;
 
-  /// RTN16b) Connection#recoveryKey is an attribute composed of the
-  /// connection key and latest serial received on the connection
+  /// The recovery key string can be used by another client to recover this
+  /// connection's state in the recover client options property.
+  ///
+  /// See [connection state recover options](https://ably.com/docs/realtime/connection#connection-state-recover-options)
+  /// for more information.
+  @Deprecated('Use createRecoveryKey instead')
   String? recoveryKey;
 
-  /// The serial number of the last message to be received on this connection.
+  /// The createRecoveryKey returns key string can be used by another client to
+  /// recover this connection's state in the recover client options property.
   ///
-  /// https://docs.ably.com/client-lib-development-guide/features/#RTN10
+  /// See [connection state recover options](https://ably.com/docs/realtime/connection#connection-state-recover-options)
+  /// for more information.
+  Future<String?> createRecoveryKey() =>
+      invoke<String?>(PlatformMethod.connectionRecoveryKey);
+
+  /// The serial number of the last message to be received on this connection,
+  /// used automatically by the library when recovering or resuming a
+  /// connection.
+  ///
+  /// When recovering a connection explicitly, the `recoveryKey` is
+  /// used in the recover client options as it contains both the key and the
+  /// last message serial.
   int? serial;
 
-  /// current state of this connection
-  ///
-  /// https://docs.ably.com/client-lib-development-guide/features/#connection-states-operations
+  /// The current [ConnectionState] of the connection.
   ConnectionState get state => _state;
 
-  /// stream of connection events with specified [ConnectionEvent] type
-  Stream<ConnectionStateChange> on([ConnectionEvent? connectionEvent]) =>
-      listen<ConnectionStateChange>(
+  /// @nodoc
+  Stream<EnrichedConnectionStateChange> _onConnectionStateChange() =>
+      listen<EnrichedConnectionStateChange>(
         PlatformMethod.onRealtimeConnectionStateChanged,
-      ).where((connectionStateChange) =>
-          connectionEvent == null ||
-          connectionStateChange.event == connectionEvent);
+      );
 
-  /// closes the connection
+  /// Stream of connection events with specified [ConnectionEvent] type.
+  Stream<ConnectionStateChange> on([ConnectionEvent? connectionEvent]) =>
+      _onConnectionStateChange().map((event) => event.stateChange).where(
+          (connectionStateChange) =>
+              connectionEvent == null ||
+              connectionStateChange.event == connectionEvent);
+
+  /// Causes the connection to close, entering the [ConnectionState.closing]
+  /// state.
   ///
-  /// https://docs.ably.com/client-lib-development-guide/features/#RTN12
+  /// Once closed, the library does not attempt to re-establish the connection
+  /// without an explicit call to [Connection.connect].
   Future<void> close() => realtime.close();
 
-  /// Explicitly connects to Ably service if not already connected
+  /// Explicitly calling `connect()` is unnecessary unless the `autoConnect`
+  /// attribute of the [ClientOptions] object is false.
   ///
-  /// https://docs.ably.com/client-lib-development-guide/features/#RTN11
+  /// Unless already connected or connecting, this method causes the connection
+  /// to open, entering the [ConnectionState.connecting] state.
   Future<void> connect() => realtime.connect();
 
-  /// ping's ably server
+  /// When connected, sends a heartbeat ping to the Ably server and executes the
+  /// callback with any error and the response time in milliseconds when a
+  /// heartbeat ping request is echoed from the server.
   ///
-  /// Will send a ProtocolMessage with action HEARTBEAT the Ably service when
-  /// connected and expects a HEARTBEAT message in response
-  /// https://docs.ably.com/client-lib-development-guide/features/#RTN13
+  /// This can be useful for measuring true round-trip latency to the connected
+  /// Ably server. Returns the response time in miliseconds as [int].
   Future<int> ping() {
     throw UnimplementedError();
   }

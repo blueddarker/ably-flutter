@@ -5,6 +5,7 @@
 #import "AblyFlutterMessage.h"
 #import "AblyFlutterReader.h"
 #import "AblyPlatformConstants.h"
+#import "AblyFlutterStreamHandler.h"
 
 
 NS_ASSUME_NONNULL_BEGIN
@@ -21,7 +22,7 @@ NS_ASSUME_NONNULL_END
         return CodecTypeAblyMessage;
     }else if([value isKindOfClass:[ARTErrorInfo class]]){
         return CodecTypeErrorInfo;
-    }else if([value isKindOfClass:[ARTConnectionStateChange class]]){
+    } else if([value isKindOfClass:[_AblyConnectionStateChange class]]){
         return CodecTypeConnectionStateChange;
     }else if([value isKindOfClass:[ARTChannelStateChange class]]){
         return CodecTypeChannelStateChange;
@@ -29,6 +30,8 @@ NS_ASSUME_NONNULL_END
         return CodecTypeMessage;
     }else if([value isKindOfClass:[ARTPresenceMessage class]]){
         return CodecTypePresenceMessage;
+    } else if ([value isKindOfClass:[ARTTokenRequest class]]){
+        return CodecTypeTokenRequest;
     }else if([value isKindOfClass:[ARTTokenParams class]]){
         return CodecTypeTokenParams;
     }else if([value isKindOfClass:[ARTPaginatedResult class]]){
@@ -51,6 +54,8 @@ NS_ASSUME_NONNULL_END
         return CodecTypeRestChannelOptions;
     } else if ([value isKindOfClass:[ARTCipherParams class]]) {
         return CodecTypeCipherParams;
+    } else if ([value isKindOfClass:[ARTTokenDetails class]]) {
+        return CodecTypeTokenDetails;
     }
     return 0;
 }
@@ -71,6 +76,8 @@ NS_ASSUME_NONNULL_END
         [NSString stringWithFormat:@"%d", CodecTypeUnNotificationSettings]: PushNotificationEncoders.encodeUNNotificationSettings,
         [NSString stringWithFormat:@"%d", CodecTypeRemoteMessage]: PushNotificationEncoders.encodeRemoteMessage,
         [NSString stringWithFormat:@"%d", CodecTypeCipherParams]: CryptoCodec.encodeCipherParams,
+        [NSString stringWithFormat:@"%d", CodecTypeTokenDetails]: encodeTokenDetails,
+        [NSString stringWithFormat:@"%d", CodecTypeTokenRequest]: encodeTokenRequest,
     };
     return [_handlers objectForKey:[NSString stringWithFormat:@"%@", type]];
 }
@@ -80,7 +87,8 @@ NS_ASSUME_NONNULL_END
     if(type != 0){
         [self writeByte: type];
         AblyCodecEncoder encoder = [AblyFlutterWriter getEncoder: [NSString stringWithFormat:@"%d", type]];
-        [self writeValue: encoder(value)];
+        id encoded = encoder(value);
+        [self writeValue: encoded];
         return;
     }
     [super writeValue:value];
@@ -200,19 +208,21 @@ static AblyCodecEncoder encodeErrorInfo = ^NSMutableDictionary*(ARTErrorInfo *co
     }
 }
 
-static AblyCodecEncoder encodeConnectionStateChange = ^NSMutableDictionary*(ARTConnectionStateChange *const stateChange) {
+static AblyCodecEncoder encodeConnectionStateChange = ^NSMutableDictionary*(_AblyConnectionStateChange *const stateChange) {
     NSMutableDictionary<NSString *, NSObject *> *dictionary = [[NSMutableDictionary alloc] init];
     WRITE_VALUE(dictionary,
                 TxConnectionStateChange_current,
-                [AblyFlutterWriter encodeConnectionState: [stateChange current]]);
+                [AblyFlutterWriter encodeConnectionState: [stateChange.value current]]);
     WRITE_VALUE(dictionary,
                 TxConnectionStateChange_previous,
-                [AblyFlutterWriter encodeConnectionState: [stateChange previous]]);
+                [AblyFlutterWriter encodeConnectionState: [stateChange.value previous]]);
     WRITE_VALUE(dictionary,
                 TxConnectionStateChange_event,
-                [AblyFlutterWriter encodeConnectionEvent: [stateChange event]]);
-    WRITE_VALUE(dictionary, TxConnectionStateChange_retryIn, [stateChange retryIn]?@((int)([stateChange retryIn] * 1000)):nil);
-    WRITE_VALUE(dictionary, TxConnectionStateChange_reason, encodeErrorInfo([stateChange reason]));
+                [AblyFlutterWriter encodeConnectionEvent: [stateChange.value event]]);
+    WRITE_VALUE(dictionary, TxConnectionStateChange_retryIn, [stateChange.value retryIn]?@((int)([stateChange.value retryIn] * 1000)):nil);
+    WRITE_VALUE(dictionary, TxConnectionStateChange_reason, encodeErrorInfo([stateChange.value reason]));
+    WRITE_VALUE(dictionary, TxConnectionStateChange_connectionId, stateChange.connectionId);
+    WRITE_VALUE(dictionary, TxConnectionStateChange_connectionKey, stateChange.connectionKey);
     return dictionary;
 };
 
@@ -294,6 +304,34 @@ static AblyCodecEncoder encodeTokenParams = ^NSMutableDictionary*(ARTTokenParams
                 [params timestamp]?@((long)([[params timestamp] timeIntervalSince1970]*1000)):nil);
     WRITE_VALUE(dictionary, TxTokenParams_capability, [params capability]);
     
+    return dictionary;
+};
+
+static AblyCodecEncoder encodeTokenRequest = ^NSMutableDictionary*(ARTTokenRequest *const tokenRequest) {
+    NSMutableDictionary<NSString *, NSObject *> *dictionary = [[NSMutableDictionary alloc] init];
+    
+    WRITE_VALUE(dictionary, TxTokenRequest_ttl, [tokenRequest ttl]);
+    WRITE_VALUE(dictionary, TxTokenRequest_nonce, [tokenRequest nonce]);
+    WRITE_VALUE(dictionary, TxTokenRequest_clientId, [tokenRequest clientId]);
+    WRITE_VALUE(dictionary, TxTokenRequest_timestamp,
+                [tokenRequest timestamp]?@((long)([[tokenRequest timestamp] timeIntervalSince1970]*1000)):nil);
+    WRITE_VALUE(dictionary, TxTokenRequest_capability, [tokenRequest capability]);
+    WRITE_VALUE(dictionary, TxTokenRequest_mac, [tokenRequest mac]);
+    WRITE_VALUE(dictionary, TxTokenRequest_keyName, [tokenRequest keyName]);
+    
+    return dictionary;
+};
+
+static AblyCodecEncoder encodeTokenDetails = ^NSMutableDictionary*(ARTTokenDetails *const details) {
+    NSMutableDictionary<NSString *, NSObject *> *dictionary = [[NSMutableDictionary alloc] init];
+    
+    WRITE_VALUE(dictionary, TxTokenDetails_token, [details token]);
+
+    WRITE_VALUE(dictionary, TxTokenDetails_issued, [details issued]?@((long)([[details issued] timeIntervalSince1970]*1000)):nil);
+    WRITE_VALUE(dictionary, TxTokenDetails_expires, [details expires]?@((long)([[details expires] timeIntervalSince1970]*1000)):nil);
+    WRITE_VALUE(dictionary, TxTokenDetails_clientId, [details clientId]);
+    WRITE_VALUE(dictionary, TxTokenDetails_capability, [details capability]);
+   
     return dictionary;
 };
 

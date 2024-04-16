@@ -1,5 +1,48 @@
 # Contributing to Ably Flutter
 
+## Overview
+A [Flutter](https://flutter.dev/) plugin for [Ably](https://www.ably.com), built on top of Ably's [iOS](https://github.com/ably/ably-cocoa) and [Android](https://github.com/ably/ably-java) SDKs.
+
+## Running the example
+
+### Authorization in the example app
+
+There are two different ways the example application can be configured to use Ably services:
+
+1. Without the Ably SDK key: the application will request a sandbox key provision from Ably server at startup, but be aware that:
+
+    - provisioned key may not support all features available in Ably SDK.
+    - provisioned keys aren't able to use Ably push notifications. This feature requires APNS and FCM identifiers to be registered for Ably instance, which can't be done with sandbox applications
+    - provisioned key will change on application restart
+
+2. With the Ably SDK key: you can create a free account on [ably.com](https://ably.com/) and then use your API key from there in the example app. This approach will give you much more control over the API capabilities and grant access to development console, where API communication can be conveniently inspected.
+
+#### Android Studio / IntelliJ Idea
+
+Under the run/ debug configuration drop down menu, click `Edit Configurations...`. Duplicate the `Example App (Duplicate and modify)` configuration. Leave the "Store as project file" unchecked to avoid committing your Ably API key into a repository. Update this new run configuration's `additional run args` with your ably API key. Run or debug the your new run/ debug configuration.
+
+![Drop down menu for Run/Debug Configurations in Android Studio](https://github.com/ably/ably-flutter/raw/main/images/run-configuration-1.png)
+
+![Run/Debug Configurations window in Android Studio](https://github.com/ably/ably-flutter/raw/main/images/run-configuration-2.png)
+
+#### Visual Studio Code
+
+- Under `Run and Debug`,
+  - Select the gear icon to view [launch.json](.vscode/launch.json)
+  - Find `Example App` launch configuration
+  - Add your Ably API key to the `configurations.args`, i.e. replace `replace_with_your_api_key` with your own Ably API key.
+  - Choose a device to launch the app:
+    - to launch on a device, make sure it is the only device plugged in.
+    - to run on a specific device when you have multiple plugged in, add another element to the `configuration.args` value, with `--device-id=replace_with_device_id`. Make sure to replace `replace_with_your_device` with your device ID from `flutter devices`.
+- From `Run and Debug` select the `Example App` configuration and run it
+
+#### Command Line using the Flutter Tool
+
+- Change into the example app directory: `cd example`
+- Install dependencies: `flutter pub get`
+- Launch the application: `flutter run --dart-define ABLY_API_KEY=put_your_ably_api_key_here`, remembering to replace `put_your_ably_api_key_here` with your own API key.
+  - To choose a specific device when more than one are connected: get your device ID using `flutter devices`, and then running `flutter run --dart-define=ABLY_API_KEY=put_your_ably_api_key_here --device-id replace_with_device_id`
+
 ## Development Flow
 
 The code in this repository has been constructed to be
@@ -141,11 +184,14 @@ The release process must include the following steps:
 2. Create a release branch named like `release/1.2.3`
 3. Add a commit to bump the version number
    - Update the version in `pubspec.yaml`
+   - Update the version in the 'Installation' section of `README.md`
    - Update the version of ably-flutter used in the example app and test integration app `podfile.lock` files:
    - Run `pod install` in `example/ios` and `test_integration/ios`, or run `pod install --project-directory=example/ios` and `pod install --project-directory=test_integration/ios`
    - Commit this
-4. Add a commit to update the change log.
-    - Autogenerate the changelog contents by running `github_changelog_generator -u ably -p ably-flutter --since-tag v1.2.2 --output delta.md` and manually copying the relevant contents from `delta.md` into `CHANGELOG.md`
+4.  Run [`github_changelog_generator`](https://github.com/github-changelog-generator/github-changelog-generator) to automate the update of the [CHANGELOG](./CHANGELOG.md). This may require some manual intervention, both in terms of how the command is run and how the change log file is modified. Your mileage may vary:
+    - The command you will need to run will look something like this: `github_changelog_generator -u ably -p ably-flutter --since-tag v1.2.2 --output delta.md --token $GITHUB_TOKEN_WITH_REPO_ACCESS`. Generate token [here](https://github.com/settings/tokens/new?description=GitHub%20Changelog%20Generator%20token).
+    - Using the command above, `--output delta.md` writes changes made after `--since-tag` to a new file.
+    - The contents of that new file (`delta.md`) then need to be manually inserted at the top of the `CHANGELOG.md`, changing the "Unreleased" heading and linking with the current version numbers.
     - Make sure to replace `HEAD` in the autogenerated URL's with the version tag you will create (e.g. `v1.2.3`).
 5. Check that everything is looking sensible to the Flutter tools without publishing by running: `flutter pub publish --dry-run`
 6. Push the release branch to GitHub
