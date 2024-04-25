@@ -112,6 +112,9 @@ public class AblyMethodCallHandler implements MethodChannel.MethodCallHandler {
     _map.put(PlatformConstants.PlatformMethod.restAuthGetClientId,
             (methodCall, result) -> authMethodHandler.clientId(methodCall, result, AuthMethodHandler.Type.Rest));
 
+    // Connection specific handlers
+    _map.put(PlatformConstants.PlatformMethod.connectionRecoveryKey, this::connectionRecoveryKey);
+
     // Push Notifications
     _map.put(PlatformConstants.PlatformMethod.pushActivate, this::pushActivate);
     _map.put(PlatformConstants.PlatformMethod.pushDeactivate, this::pushDeactivate);
@@ -133,54 +136,25 @@ public class AblyMethodCallHandler implements MethodChannel.MethodCallHandler {
     _map.put(PlatformConstants.PlatformMethod.cryptoGenerateRandomKey, this::cryptoGenerateRandomKey);
   }
 
-  // MethodChannel.Result wrapper that responds on the platform thread.
-  //
-  // Plugins crash with "Methods marked with @UiThread must be executed on the main thread."
-  // This happens while making network calls in thread other than main thread
-  //
-  // https://github.com/flutter/flutter/issues/34993#issue-459900986
-  // https://github.com/aloisdeniel/flutter_geocoder/commit/bc34cfe473bfd1934fe098bb7053248b75200241
-  private static class MethodResultWrapper implements MethodChannel.Result {
-    private final MethodChannel.Result methodResult;
-    private final Handler handler;
-
-    MethodResultWrapper(MethodChannel.Result result) {
-      methodResult = result;
-      handler = new Handler(Looper.getMainLooper());
-    }
-
-    @Override
-    public void success(final Object result) {
-      handler.post(() -> methodResult.success(result));
-    }
-
-    @Override
-    public void error(
-        final String errorCode, final String errorMessage, final Object errorDetails) {
-      handler.post(() -> methodResult.error(errorCode, errorMessage, errorDetails));
-    }
-
-    @Override
-    public void notImplemented() {
-      handler.post(methodResult::notImplemented);
-    }
-  }
-
   private void handleAblyException(@NonNull MethodChannel.Result result, @NonNull AblyException e) {
     result.error(Integer.toString(e.errorInfo.code), e.getMessage(), e.errorInfo);
   }
 
   @Override
   public void onMethodCall(@NonNull MethodCall call, @NonNull MethodChannel.Result rawResult) {
-    final MethodChannel.Result result = new MethodResultWrapper(rawResult);
+    final MethodChannel.Result result = new MainThreadMethodResult(call.method, rawResult);
     Log.v(TAG, String.format("onMethodCall: Ably Flutter platform method \"%s\" invoked.", call.method));
     final BiConsumer<MethodCall, MethodChannel.Result> handler = _map.get(call.method);
     if (null == handler) {
       // We don't have a handler for a method with this name so tell the caller.
       result.notImplemented();
     } else {
-      // We have a handler for a method with this name so delegate to it.
-      handler.accept(call, result);
+      try {
+        // We have a handler for a method with this name so delegate to it.
+        handler.accept(call, result);
+      } catch (Exception e) {
+        Log.e(TAG, String.format("\"%s\" platform method received error during invocation, caused by: %s", call.method, e.getMessage()), e);
+      }
     }
   }
 
@@ -580,12 +554,15 @@ public class AblyMethodCallHandler implements MethodChannel.MethodCallHandler {
         time(result, instanceStore.getRealtime(ablyMessage.handle));
     }
 
-
-
-
-  private void restTime(@NonNull MethodCall methodCall, @NonNull MethodChannel.Result result) {
+    private void restTime(@NonNull MethodCall methodCall, @NonNull MethodChannel.Result result) {
         final AblyFlutterMessage ablyMessage = (AblyFlutterMessage) methodCall.arguments;
         time(result, instanceStore.getRest(ablyMessage.handle));
+    }
+
+    private void connectionRecoveryKey(@NonNull MethodCall methodCall, @NonNull MethodChannel.Result result) {
+        final AblyFlutterMessage<?> ablyMessage = (AblyFlutterMessage<?>) methodCall.arguments;
+        AblyRealtime realtime = instanceStore.getRealtime(ablyMessage.handle);
+        result.success(realtime.connection.createRecoveryKey());
     }
 
     private void time(@NonNull MethodChannel.Result result, AblyBase client) {

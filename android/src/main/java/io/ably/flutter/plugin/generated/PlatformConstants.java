@@ -77,6 +77,9 @@ final public class PlatformConstants {
         public static final String realtimeAuthCreateTokenRequest = "realtimeAuthCreateTokenRequest";
         public static final String realtimeAuthRequestToken = "realtimeAuthRequestToken";
         public static final String realtimeAuthGetClientId = "realtimeAuthGetClientId";
+
+        public static final String connectionRecoveryKey = "connectionRecoveryKey";
+
         public static final String pushActivate = "pushActivate";
         public static final String pushDeactivate = "pushDeactivate";
         public static final String pushReset = "pushReset";
@@ -309,6 +312,8 @@ final public class PlatformConstants {
         public static final String event = "event";
         public static final String retryIn = "retryIn";
         public static final String reason = "reason";
+        public static final String connectionId = "connectionId";
+        public static final String connectionKey = "connectionKey";
     }
 
     static final public class TxChannelStateChange {

@@ -1,5 +1,89 @@
 # Changelog
 
+## [1.2.30](https://github.com/ably/ably-flutter/tree/v1.2.30)
+
+[Full Changelog](https://github.com/ably/ably-flutter/compare/v1.2.29...v1.2.30)
+
+This release includes a new privacy manifest as required under new Apple guidelines. 
+
+- Updated `ably-cocoa` dependency to `1.2.30`
+
+## [1.2.29](https://github.com/ably/ably-flutter/tree/v1.2.29)
+
+[Full Changelog](https://github.com/ably/ably-flutter/compare/v1.2.28...v1.2.29)
+
+This release contains Ably Push Notification improvements
+
+- Updated `ably-cocoa` dependency to `1.2.29`
+- Updated `ably-android` dependency to `1.2.36`
+
+## [1.2.28](https://github.com/ably/ably-flutter/tree/v1.2.28)
+
+[Full Changelog](https://github.com/ably/ably-flutter/compare/v1.2.27...v1.2.28)
+
+- Updated `ably-cocoa` dependency to `1.2.27`
+
+## [1.2.27](https://github.com/ably/ably-flutter/tree/v1.2.27)
+
+[Full Changelog](https://github.com/ably/ably-flutter/compare/v1.2.26...v1.2.27)
+
+**Fixed bugs:**
+
+- When the app comes back to the foreground from the background [\#504](https://github.com/ably/ably-flutter/issues/504)
+
+**Closed issues:**
+
+- How do we get connectionId from connection? [\#502](https://github.com/ably/ably-flutter/issues/502)
+- Implement no-connection-serial [\#438](https://github.com/ably/ably-flutter/issues/438)
+
+## [1.2.26](https://github.com/ably/ably-flutter/tree/v1.2.26)
+
+[Full Changelog](https://github.com/ably/ably-flutter/compare/v1.2.25...v1.2.26)
+
+- `ably-cocoa` dependency is bumped to `1.2.24`
+
+## [1.2.25](https://github.com/ably/ably-flutter/tree/v1.2.25)
+
+[Full Changelog](https://github.com/ably/ably-flutter/compare/v1.2.24...v1.2.25)
+
+**Closed issues:**
+
+- setOnBackgroundMessage not getting along with async/await [\#496](https://github.com/ably/ably-flutter/issues/496)
+
+## [1.2.24](https://github.com/ably/ably-flutter/tree/v1.2.24)
+
+[Full Changelog](https://github.com/ably/ably-flutter/compare/v1.2.23...v1.2.24)
+
+- `ably-android` dependency is bumped to `1.2.33`
+
+## [1.2.23](https://github.com/ably/ably-flutter/tree/v1.2.23)
+
+[Full Changelog](https://github.com/ably/ably-flutter/compare/v1.2.22...v1.2.23)
+
+- `ably-cocoa` dependency is bumped to `1.2.23`
+
+**Closed issues:**
+
+- clear clientId after deregistration
+
+## [1.2.22](https://github.com/ably/ably-flutter/tree/v1.2.22)
+
+[Full Changelog](https://github.com/ably/ably-flutter/compare/v1.2.21...v1.2.22)
+
+**Closed issues:**
+
+- loading LocalDevice hit Unhandled Exception [\#491](https://github.com/ably/ably-flutter/issues/491)
+
+## [1.2.21](https://github.com/ably/ably-flutter/tree/v1.2.21)
+
+[Full Changelog](https://github.com/ably/ably-flutter/compare/v1.2.20...v1.2.21)
+
+**Closed issues:**
+
+- prevent app crash during method channel call [\#489](https://github.com/ably/ably-flutter/pull/489)
+- fix numbers strategy for Gson to prevent changing int to double [\#486](https://github.com/ably/ably-flutter/pull/486)
+- int value is changed to double on Android [\#461](https://github.com/ably/ably-flutter/issues/461)
+
 ## [1.2.20](https://github.com/ably/ably-flutter/tree/v1.2.20)
 
 [Full Changelog](https://github.com/ably/ably-flutter/compare/v1.2.19...v1.2.20)
