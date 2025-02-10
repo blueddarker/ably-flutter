@@ -15,8 +15,7 @@ void main() {
   const _nativeLibraryVersion = '1.1.0';
 
   setUp(() {
-    TestDefaultBinaryMessengerBinding.instance.defaultBinaryMessenger
-        .setMockMethodCallHandler(channel, (methodCall) async {
+    channel.setMockMethodCallHandler((methodCall) async {
       switch (methodCall.method) {
         case PlatformMethod.resetAblyClients:
           return true;
@@ -40,8 +39,7 @@ void main() {
   });
 
   tearDown(() {
-    TestDefaultBinaryMessengerBinding.instance.defaultBinaryMessenger
-        .setMockMethodCallHandler(channel, null);
+    channel.setMockMethodCallHandler(null);
   });
 
   test(PlatformMethod.getPlatformVersion, () async {

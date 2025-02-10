@@ -14,9 +14,9 @@ class PushNotificationsReceivedSliver extends StatelessWidget {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            const Row(
+            Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
+              children: const [
                 Text(
                   'Received messages',
                   style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),

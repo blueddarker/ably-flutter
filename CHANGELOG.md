@@ -1,58 +1,5 @@
 # Changelog
 
-## [1.2.36](https://github.com/ably/ably-flutter/tree/v1.2.36)
-
-[Full Changelog](https://github.com/ably/ably-flutter/compare/v1.2.35...v1.2.36)
-
-**Fixed bugs:**
-
-- Error on Android Build [\#551](https://github.com/ably/ably-flutter/issues/551)
-
-## [1.2.35](https://github.com/ably/ably-flutter/tree/v1.2.35)
-
-[Full Changelog](https://github.com/ably/ably-flutter/compare/v1.2.34...v1.2.35)
-
-**Fixed bugs:**
-
-- Not compiling on fresh new Android project [\#550](https://github.com/ably/ably-flutter/issues/550)
-- Error inside Realtime client subscription after hot restart [\#531](https://github.com/ably/ably-flutter/issues/531)
-
-## [1.2.34](https://github.com/ably/ably-flutter/tree/v1.2.34)
-
-[Full Changelog](https://github.com/ably/ably-flutter/compare/v1.2.33...v1.2.34)
-
-- Updated `ably-cocoa` dependency to `1.2.33`
-
-**Fixed bugs:**
-
-- The `title` field in the push notification should be nullable [\#532](https://github.com/ably/ably-flutter/issues/532)
-
-## [1.2.33](https://github.com/ably/ably-flutter/tree/v1.2.33)
-
-[Full Changelog](https://github.com/ably/ably-flutter/compare/v1.2.32...v1.2.33)
-
-- Updated `ably-android` dependency to `1.2.40`
-
-**Fixed bugs:**
-
-- Crash on IPhone 7 plus [\#527](https://github.com/ably/ably-flutter/issues/527)
-
-## [1.2.32](https://github.com/ably/ably-flutter/tree/v1.2.32)
-
-[Full Changelog](https://github.com/ably/ably-flutter/compare/v1.2.31...v1.2.32)
-
-**Fixed bugs:**
-
-- Message extras deserialization not working [\#523](https://github.com/ably/ably-flutter/issues/523)
-
-## [1.2.31](https://github.com/ably/ably-flutter/tree/v1.2.31)
-
-[Full Changelog](https://github.com/ably/ably-flutter/compare/v1.2.30...v1.2.31)
-
-This release improves support for Android 19
-
-- Updated `ably-android` dependency to `1.2.38`
-
 ## [1.2.30](https://github.com/ably/ably-flutter/tree/v1.2.30)
 
 [Full Changelog](https://github.com/ably/ably-flutter/compare/v1.2.29...v1.2.30)

@@ -32,14 +32,11 @@ class MessageExtras with ObjectHash {
     // for example, when it's a CastMap, so we need to create a mutable
     // instance from the existing extras map
     final mutableExtrasMap = Map<String, dynamic>.from(extrasMap);
-    final deltaMap = mutableExtrasMap.remove(TxMessageExtras.delta) as Map?;
-    final deltaExtras = (deltaMap == null)
-        ? null
-        : DeltaExtras.fromMap(Map<String, dynamic>.from(deltaMap));
-
+    final deltaMap =
+        mutableExtrasMap.remove(TxMessageExtras.delta) as Map<String, dynamic>?;
     return MessageExtras._withDelta(
       mutableExtrasMap,
-      deltaExtras,
+      (deltaMap == null) ? null : DeltaExtras.fromMap(deltaMap),
     );
   }
 

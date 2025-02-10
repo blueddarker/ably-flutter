@@ -140,9 +140,7 @@ static AblyCodecDecoder readClientOptions = ^AblyFlutterClientOptions*(NSDiction
     READ_VALUE(clientOptions, idempotentRestPublishing, dictionary, TxClientOptions_idempotentRestPublishing);
     READ_VALUE(clientOptions, fallbackHosts, dictionary, TxClientOptions_fallbackHosts);
     READ_VALUE(clientOptions, fallbackHostsUseDefault, dictionary, TxClientOptions_fallbackHostsUseDefault);
-    ON_VALUE(^(const id value) {
-        clientOptions.transportParams = [AblyFlutterReader transportParamsFromDictionary: value];
-    }, dictionary, TxClientOptions_transportParams);
+    READ_VALUE(clientOptions, transportParams, dictionary, TxClientOptions_transportParams);
     ON_VALUE(^(const id value) {
         clientOptions.defaultTokenParams = [AblyFlutterReader tokenParamsFromDictionary: value];
     }, dictionary, TxClientOptions_defaultTokenParams);
@@ -245,19 +243,6 @@ static AblyCodecDecoder readTokenParams = ^ARTTokenParams*(NSDictionary *const d
         tokenParams.timestamp = [NSDate dateWithTimeIntervalSince1970:[value doubleValue]/1000];
     }, dictionary, TxTokenParams_timestamp);
     return tokenParams;
-}
-
-
-+(NSDictionary<NSString *, ARTStringifiable *> *)transportParamsFromDictionary: (NSDictionary *) dictionary {
-    NSMutableDictionary<NSString *, ARTStringifiable *> *result = [NSMutableDictionary dictionary];
-
-    for (NSString *key in dictionary) {
-        NSString *value = dictionary[key];
-        ARTStringifiable *stringifiable = [[ARTStringifiable alloc] initWithString:value];
-        result[key] = stringifiable;
-    }
-
-    return [result copy];
 }
 
 static AblyCodecDecoder readChannelMessageExtras = ^id<ARTJsonCompatible>(NSDictionary *const dictionary) {

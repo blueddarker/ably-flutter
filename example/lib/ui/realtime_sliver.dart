@@ -262,8 +262,8 @@ class RealtimeSliver extends HookWidget {
         ),
         PaginatedResultViewer<ably.Message>(
             title: 'History',
-            subtitle: const Column(
-              children: [
+            subtitle: Column(
+              children: const [
                 TextRow(
                     'Hint',
                     'Use realtime history as a way to get messages that were'
