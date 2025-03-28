@@ -16,9 +16,9 @@ dependencies:
   async: ^2.6.1
   stream_transform: ^2.0.0
   enum_to_string: ^2.0.1
-  flutter_local_notifications: ^9.2.0
-  fluttertoast: 8.0.2
-  device_info_plus: ^3.2.1
+  flutter_local_notifications: ^17.2.3
+  fluttertoast: ^8.2.12
+  device_info_plus: ^10.1.2
   crypto: ^3.0.1
   flutter_hooks: ^0.18.2
 
