@@ -44,7 +44,9 @@ android {
         // Flag to enable Java 8 language APIs while supporting to older SDK Versions
         coreLibraryDesugaringEnabled true
     }
-
+    buildFeatures {
+        buildConfig = true
+    }
     defaultConfig {
         minSdkVersion 19
 
