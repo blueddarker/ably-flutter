@@ -8,7 +8,7 @@ buildscript {
     }
 
     dependencies {
-        classpath 'com.android.tools.build:gradle:7.2.0'
+        classpath 'com.android.tools.build:gradle:7.4.0'
     }
 }
 
@@ -23,18 +23,22 @@ apply plugin: 'com.android.library'
 
 dependencies {
     // https://github.com/ably/ably-java/
-    implementation 'io.ably:ably-android:1.2.36'
+    implementation 'io.ably:ably-android:1.2.40'
 
     // https://firebase.google.com/docs/cloud-messaging/android/client
     implementation 'com.google.firebase:firebase-messaging:23.0.4'
 
     // https://github.com/google/desugar_jdk_libs
-    coreLibraryDesugaring 'com.android.tools:desugar_jdk_libs:2.0.3'
+    coreLibraryDesugaring 'com.android.tools:desugar_jdk_libs:1.1.5'
 }
 
 android {
-    namespace 'io.ably.flutter.plugin'
-    compileSdkVersion 32
+    compileSdkVersion 34
+
+    // Conditional for compatibility with AGP <4.2.
+    if (project.android.hasProperty("namespace")) {
+        namespace 'io.ably.flutter.plugin'
+    }
 
     // Require Java language level 8 so we can use Method References (used with Lambdas)
     compileOptions {
@@ -44,9 +48,7 @@ android {
         // Flag to enable Java 8 language APIs while supporting to older SDK Versions
         coreLibraryDesugaringEnabled true
     }
-    buildFeatures {
-        buildConfig = true
-    }
+
     defaultConfig {
         minSdkVersion 19
 
@@ -58,6 +60,9 @@ android {
     }
     lintOptions {
         disable 'InvalidPackage'
+    }
+    buildFeatures {
+        buildConfig true
     }
 }
 
